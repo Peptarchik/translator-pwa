@@ -22,14 +22,13 @@ input.addEventListener('input', () => {
 });
 
 async function translateWeb(text) {
-  // определяем цель: если есть кириллица → en, иначе uk
   const dest = /[А-Яа-яЁё]/.test(text) ? 'en' : 'uk';
 
-  const res = await fetch('https://libretranslate.de/translate', {
+  const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      q: text,
+      q:      text,
       source: 'auto',
       target: dest,
       format: 'text'
@@ -41,7 +40,5 @@ async function translateWeb(text) {
   }
 
   const data = await res.json();
-  // библиотека возвращает { translatedText: "…" }
   return data.translatedText || data.translations?.[0]?.text;
 }
-
