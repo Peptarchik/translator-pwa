@@ -1,7 +1,7 @@
 // renderer.js
 
-// 1) URL вашего публичного Translate-API:
-const API_URL = 'https://translate.argosopentech.com/translate';
+// ставим корректный URL
+const API_URL = 'https://libretranslate.de/translate';
 
 const input  = document.getElementById('inputText');
 const output = document.getElementById('resultText');
@@ -26,7 +26,6 @@ input.addEventListener('input', () => {
 });
 
 async function translateWeb(text) {
-  // автоопределяем направление — если есть кириллица, то в англ., иначе в укр.
   const dest = /[А-Яа-яЁё]/.test(text) ? 'en' : 'uk';
 
   const res = await fetch(API_URL, {
@@ -44,7 +43,5 @@ async function translateWeb(text) {
     throw new Error(`${res.status} ${res.statusText}`);
   }
   const data = await res.json();
-  // структура ответа: { translatedText: '...', … }
   return data.translatedText;
 }
-
