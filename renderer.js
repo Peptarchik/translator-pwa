@@ -10,25 +10,38 @@ input.addEventListener('input', () => {
     return;
   }
   output.textContent = 'Перевожу…';
-
   timer = setTimeout(async () => {
     try {
-      // отправляем текст на libretranslate
-      const res = await fetch('https://libretranslate.de/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          q: txt,
-          source: 'auto',
-          target: /[А-Яа-яЁё]/.test(txt) ? 'en' : 'uk',
-          format: 'text'
-        })
-      });
-      if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
-      const { translatedText } = await res.json();
-      output.textContent = translatedText;
+      const translated = await translateWeb(txt);
+      output.textContent = translated;
     } catch (err) {
-      output.textContent = 'Ошибка: ' + err.message;
+      console.error(err);
+      output.textContent = 'Ошибка: ' + (err.message || err);
     }
-  }, 500);
+  }, 300);
 });
+
+async function translateWeb(text) {
+  // определяем цель: если есть кириллица → en, иначе uk
+  const dest = /[А-Яа-яЁё]/.test(text) ? 'en' : 'uk';
+
+  const res = await fetch('https://libretranslate.de/translate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      q: text,
+      source: 'auto',
+      target: dest,
+      format: 'text'
+    })
+  });
+
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`);
+  }
+
+  const data = await res.json();
+  // библиотека возвращает { translatedText: "…" }
+  return data.translatedText || data.translations?.[0]?.text;
+}
+
