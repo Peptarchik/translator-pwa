@@ -10,8 +10,10 @@ input.addEventListener('input', () => {
     return;
   }
   output.textContent = 'Перевожу…';
+
   timer = setTimeout(async () => {
     try {
+      // отправляем текст на libretranslate
       const res = await fetch('https://libretranslate.de/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -22,11 +24,11 @@ input.addEventListener('input', () => {
           format: 'text'
         })
       });
-      if (!res.ok) throw new Error(res.statusText);
+      if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
       const { translatedText } = await res.json();
       output.textContent = translatedText;
     } catch (err) {
       output.textContent = 'Ошибка: ' + err.message;
     }
-  }, 300);
+  }, 500);
 });
