@@ -1,3 +1,5 @@
+const API_URL = 'https://translate.argosopentech.com/translate';
+
 const input  = document.getElementById('inputText');
 const output = document.getElementById('resultText');
 
@@ -12,8 +14,7 @@ input.addEventListener('input', () => {
   output.textContent = 'Перевожу…';
   timer = setTimeout(async () => {
     try {
-      const translated = await translateWeb(txt);
-      output.textContent = translated;
+      output.textContent = await translateWeb(txt);
     } catch (err) {
       console.error(err);
       output.textContent = 'Ошибка: ' + (err.message || err);
@@ -38,7 +39,6 @@ async function translateWeb(text) {
   if (!res.ok) {
     throw new Error(`${res.status} ${res.statusText}`);
   }
-
   const data = await res.json();
   return data.translatedText || data.translations?.[0]?.text;
 }
